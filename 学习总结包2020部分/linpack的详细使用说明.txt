@@ -1,0 +1,54 @@
+linpack在公司的打包系统是自带的，在/root的用户目录里
+
+0.介绍
+Linpack现在在国际上已经成为最流行的用于测试高性能计算机系统浮点性能的benchmark。通过利用高性能计算机，用高斯消元法求解N元一次稠密线性代数方程组的测试，评价高性能计算机的浮点性能。
+
+1.linpack路径
+#cd /root/linpack进入
+里面有41xx 61xx HPL.dat xhpl.mkl主要就这几个文件有用，另外的temp根据蒋哥的图片说有用但我不会用而且觉得没必要
+41xx  61xx是指cpu型号，比如我cpu是intel xeon 6160那就直接进的61xx测试，不一定进特定文件夹,能测试就好
+linpack测试主要就是HPL.dat中进行计算参数配置， xhpl(.mkl)就是linpack的执行文件
+
+2.HPL.dat设置
+#vim HPL.dat 
+里面的12600 12600 .................... Ns 指 的是根据内存设定矩阵计算大小
+设置参照8GB运行内存就设定26000
+16  41000
+32  60000
+64  86000
+128 126000
+192 150000
+256 156000我去测试的那个老师就是256GB运行内存，所以把数字126000都改成156000就行
+里面的Ps代表cpu个数，Qs代表单个cpu进程数，
+cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l(这个是英文L,不是数字1) 查看cpu个数
+cat /proc/cpuinfo | grep "cpu cores" | sort | uniq | wc -l                          查看cpu单个核数
+cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l                        查看电脑进程数
+Ps输入第一个命令查询的结果,Qs输入第三个查询出的进程数除以cpu个数
+保存退出
+
+3../xhpl运行测试
+然后进行./xhpl.mkl运行会出现缺少libimf.so,就需要输入以下命令
+#source /etc/profile 就可以，profiles会自动把/opt的intel编辑器的环境变量进行配置，然后就可以运行了
+#mpirun -np (Ps*Qs) ./xhpl.mkl就能进行linpack测试
+
+如果进入41xx 61xx运行./xhpl会出现缺少libmpifort.so.12就需要输入
+#source /opt/impi/mpivars.sh然后mpi库就能找到，就可以直接运行
+#mpirun -np (Ps*Qs) ./xhpl就能进行linpack测试
+
+4.结果查看
+运行后等2-4分钟会开始出现结果，用top可以看到cpu接近满调用，内存调用不多，正常现象。结果形式通常是
+Column=XXXXXXX Fraction=0.005 Mflops=XXXXXX
+Column=XXXXXXX Fraction=0.010 Mflops=XXXXXX
+Column=XXXXXXX Fraction=0.015 Mflops=XXXXXX
+Column=XXXXXXX Fraction=0.020 Mflops=XXXXXX
+主要看的是Mflops,指的是每秒百万个浮点计算，能够反映cpu的浮点计算能力。
+比如武汉这边办公电脑Mflops是4w，我去测试的那个老师差不多140w左右
+
+5.至于蒋哥图片后面的几步
+cd /root/linpack/temp
+rm -rf temperature.out删除日志
+sh temp.sh生成日志记录测试
+cd 
+cd scrpt
+sh Get .....
+我就没看懂，自己弄一遍也没成功，可以自己尝试研究研究

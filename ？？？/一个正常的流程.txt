@@ -1,0 +1,6 @@
+做什么
+需求
+数据库 mysql
+划分模块开发 eclipse，java，python,pycharm，html
+版本控制，备份 git
+检测维护，备份，访问量，服务器负载

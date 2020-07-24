@@ -1,0 +1,46 @@
+硬盘被格式化怎么办
+理论上讲,硬盘格式化后文件是完全可以恢复的。不过实际生活中,有时候不能达到100%完全恢复。 硬盘格式化过程是重新建立新的文件系统,硬盘上的数据还是保留在硬盘上,知道被覆盖为止,这与文件删除原理类似。但是硬盘格式化后很难保证没有写入操作,也就是文件覆盖。比如,一般硬盘格式化后会装入系统...
+
+所以不小心格式化就不要做任何操作
+windows恢复软件
+数据恢复大师等软件尝试没什么用
+所以不小心格式化，文件也相当重要，那就去找专门的数据恢复中心
+
+
+linux下RM删除文件该怎么办
+请注意，如果使用 rm 来删除文件，通常仍可以将该文件恢复原状。如果想保证该文件的内容无法还原，请考虑使用 shred。
+  所以理论上rm删除的文件是还能恢复的。删掉文件其实只是将指向数据块的索引点(information nodes)释放，只要不被覆盖，数据其实还在硬盘上，关键在于找出索引点，然后将其所指数据块内的数据抓出，再保存到另外的分区。在用rm误删除文件后，我们要做的第一件事就是保证不再向误删文件的分区写数据。
+通常我们可以有以下几种选择：
+1、借助工具。
+2、自己写程序。你需要会编程并了解对应的文件系统。
+3、如果数据很有用，也许可以找专业公司抢救。
+工具
+1、The Sleuth Kit　http://www.sleuthkit.org/sleuthkit/(Autopsy是它的一个图形前端)
+2、Foremost　　　　http://foremost.sourceforge.net
+3、一个全能的工具，Finaldata,可以恢复unix/linux/dos下误删的文件。对于unix，支持这些产品， 　　　　Solaris、AIX和HP-UX。对于linux，支持EXT2的文件系统。对于dos，支持FAT 12/16/32, NTFS 4/5/5.1 的文件系统。
+4、如果文件系统是ext2(对ext3无效):
+ext3的删除机制是直接把 inode data 删除了，所以造成 ext3 无法反删除(ext3设计为无法恢复被删除的文件)。
+unrm
+ext2ed
+debugfs(undel lsdel )
+recover
+Midnight Commander(mc)
+e2undel
+tct
+5、如果文件系统是FAT32或者NTFS:
+EasyRecovery
+Finaldata
+6、freebsd如果使用了rm，可以试一下undelete这个命令.
+7、当进程打开了某个文件时，只要该进程保持打开该文件，lsof可以用来恢复删除文件。
+
+Linux下用rm删除的文件的恢复方法_Linux教程_Linux公社-Linux系统门户网站
+https://www.linuxidc.com/Linux/2008-08/14744.htm
+
+linux_文件删除的恢复（rm -rf *） - weiguang1017的专栏 - CSDN博客
+https://blog.csdn.net/weiguang1017/article/details/52239685
+
+Linux 利用lsof命令恢复删除的文件 - rysinal - 博客园
+https://www.cnblogs.com/rysinal/p/6214484.html
+
+Linux恢复误删除的文件或者目录 - 简书
+https://www.jianshu.com/p/662293f12a47

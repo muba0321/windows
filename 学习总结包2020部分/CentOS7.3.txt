@@ -1,0 +1,159 @@
+﻿ 						
+						CentOS 7.3   集群设置
+一、网络设置
+
+1.配置加入集群的节点的网络，root用户更改，同一网段内IP自己分配。
+  主节点双网口，1个网口集群内网，1个网口集群外网
+  CentOS7如果有GNOME图形化界面，在右上角有线网络配置里进行配置网络，输入IP，子网掩码，网关，DNS服务器等等。
+  如果没有安装图形化界面，输入以下命令
+  #vim /etc/sysconfig/network-scripts/ifcfg-eth0 （网口根据实际情况配置，也可用Tab键选定）
+  修改 IP：IPADDR=10.0.0.XX
+  有必要的话，还需要修改 PREFIX(子网掩码)GATEWAY(网关)DNS等等···
+2.修改主机名
+  #vim /etc/sysconfig/network (需重启生效)
+  修改主机名：HOSTNAME=nodexx
+  主节点多加一行：NISDOMAIN＝nodexx (设置NIS时用到)
+  vim /etc/hostname (亲测可行)
+3.修改hosts文件。输入以下命令
+  # vim /etc/hostsTX errors 0  dropped 0 ov
+  加入如下行
+  ... ...
+  10.0.0.1 node01
+  10.0.0.2 node02
+  10.0.0.3 node03
+  ... ...
+  保存退出
+  将此文件Copy至集群其它节点相同路径
+  #scp /etc/hosts root@10.0.0.XX:/etc
+  重启网络服务
+  #systemctl restart network.service
+二、NIS(Network Information Service 网络信息系统)
+   1.服务安装
+
+   cd /backup/
+   mount CentOS-7-x86_64-DVD-1611.iso /mnt/
+   cd /mnt/Packages
+
+   rpm -ivh ypbind-1.37.1-7.el7.x86_64.rpm ypserv-2.31-8.el7.x86_64.rpm yp-        tools-2.14-3.el7.x86_64.rpm
+   yum install libtokyocabinet.so.9
+   yum install libtokyocabinet.so.*
+
+三、NIS(Network Information Service 网络信息系统) 
+
+  配置：
+  在主节点上输入
+  
+  # systemctl enable yppasswdd.service 
+  # systemctl enable ypxfrd.service
+  # systemctl enable ypserv.service
+  # systemctl restart yppasswdd.service
+  # systemctl restart ypxfrd.service
+  # systemctl restart ypserv.service
+  # nisdomainname node01
+  # /usr/lib64/yp/ypinit -m
+  不要写入什么，然后 Ctrl+D，输入 y，再回车
+ 防火墙关闭
+  1.systemctl stop firewalld
+  2.vim /etc/selinux/config
+  selinux=disabled
+  在其他节点上输入
+  # systemctl enable ypbind.service
+  # authconfig-tui
+  点选【使用 NIS】（使用空格选中），然后下一步
+  域和服务器都填入主节点node01的名字，然后【确定】
+  # systemctl restart ypbind.service
+
+四、NFS(Network File System 网络文件系统)
+
+  在主节点（存储节点）上修改如下文件
+
+  # vim /etc/exports
+  加入行：/home *(rw,no_root_squash,sync)
+  在这里出于安全考虑，通常不用＊，改为
+  /home 静态网关/24(rw,no_root_squash,sync)
+
+  主节点设置开机启动 nfs 服务
+  # systemctl enable nfs.service
+  然后重新启动nfs 
+  # systemctl restart nfs.service
+
+  在其它节点修改如下文件
+  # vim /etc/rc.local
+  加入行：mount -t nfs node01:/home   /home
+  保存退出
+  # systemctl restart nfs.service
+  # reboot
+  重启完成后用df -h来检查挂载情况，如果有/home 则设置成功。(注：若无法成功挂载，# chmod 777 /etc/rc.local 使rc.local文件开机时有权限执行。)
+
+五、SSH 无密码登录设置
+  使用 root 登录每个节点，在每个节点上执行如下命令
+  # ssh-keygen
+  按照提示默认回车，有提示 overwrite 时写入 y，然后回车
+  在 ~/.ssh/目录下会生成id_rsa.pub
+  把每个节点的.pub文件复制到主节点的~/.ssh路径下面，然后在主节点把所有.pub合并成authorized_keys文件，最后把这个公钥文件分发到每个节点
+  # scp ~/.ssh/id_rsa.pub root@node01:~/.ssh/文件名.pub
+  注：文件名根据节点号起名字，便于区分，但后缀名为pub；
+  # cat ~/.ssh/*.pub > ~/.ssh/authorized_keys
+  如此公钥以生成，将此 authorized_keys拷贝于其它节点相同路径即可。
+  # scp ~/.ssh/authorized_keys  root@nodeXX:/.ssh
+2.普通用户
+  在任意一节点执行ssh-keygen 默认回车
+  将生成的id_rsa.pub 追加到authorized_keys并改成自己的权限即可。
+  $ cat id_pub.dsa >> authorized_keys
+  $ chmod 600 ~/.ssh/authorized_keys
+  新建用户需执行以下命令
+  $ cd /var/yp
+  # make
+  如果不执行此布，则该新建用户无法在其他节点上登陆。
+
+六、PBS作业管理系统
+1.安装torque
+  # tar xvf -C /opt/software/
+  # cd /opt/software/torque-XXX
+  # ./configure --prefix=/opt/software/torque-XXX
+  # make
+  # make install
+  # vim /etc/profile 加入以下行在末尾
+  export PATH=/opt/software/torque-XXX/bin:$PATH
+  export PATH=/opt/software/torque-XXX/sbin:$PATH
+  export LD_LIBRARY_PATH=/opt/software/torque-XXX/lib:$LD_LIBRARY_PATH
+  保存退出
+  # source /etc/profile
+  #./torque.setup root
+  # cd contrib/init.d
+  # cp pbs_server pbs_mom pbs_sched trqauthd /etc/init.d
+  (注：如果安装的torque版本为6.0.X可进入contrib/systemd 将pbs_server.service pbs_mom.service pbs_sched.service trqauthd.service复制到/lib/systemd/system下，然后执行chmod +X pbs_server.service pbs_mom.service pbs_sched.service trqauthd.service)
+  # chkconfig --add pbs_server
+  # chkconfig --add pbs_sched
+  # chkconfig --add pbs_mom
+  # chkconfig --add trqauthd
+2.主节点设置
+  # chkconfig pbs_server on
+  # chkconfig pbs_sched on
+  # chkconfig pbs_mom on
+  # chkconfig trqauthd on
+  （注：如果安装torque版本为6.0.X且复制的为contrib/systemd下的XXX.service服务，这步则需要使用systemctl enable XXX.service来使服务开机自启）
+  # vim /var/spool/torque/server_priv/nodes (需要创建)
+  写入每个节点的名字以及节点机器的物理CPU核数
+  node01 np=XX
+  node02 np=XX
+  ······
+  保存退出
+  # vim /var/spool/torque/server_name  写入主节点名字，保存退出。
+3.子节点设置
+  # chkconfig pbs_mom on
+  # chkconfig trqauthd on
+  # vim /var/spool/torque/mom_priv/config
+   写入$pbsserver node01
+     $logevent 255
+   保存退出
+  # vim /var/spool/torque/server_name  写入主节点名字，保存退出。
+  # systemctl restart pbs_mom.service
+4.PBS启动
+  主节点
+  # systemctl restart pbs_server.service
+  # systemctl restart pbs_sched.service
+  # systemctl restart pbs_mom.service
+  # systemctl restart trqauthd.service
+  使用qnodes命令查看集群情况，qsub提交pbs脚本，qstat -a查看队列。
+

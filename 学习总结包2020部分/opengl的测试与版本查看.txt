@@ -1,0 +1,5 @@
+opengl版本太低，可以尝试安装显卡驱动，nvidia官方给的opengl也就是一个显卡驱动，下面会给出适配的显卡型号，可以先安装该显卡型号对应的驱动看能否成功，安装完以后再安装mesa等依赖库然后可以进行测试，
+linux查看 opengl版本方法
+https://blog.csdn.net/sinat_36301420/article/details/85237579，按照里面编译执行我出现了报错致命错误：GL/glut.h：没有那个文件或目录，需要yum install glut-devel以后执行gcc test.c -o test -lglut -lGL -lGLU获得执行文件test,然后./test执行获得gl版本信息。
+按照这个链接最终可以获得oengl 3dviewe的图形测试结果https://www.linuxidc.com/Linux/2017-03/141555.htm
+ 注意：不要用文字界面如xshell,ssh查看运行opengl，不支持，且就算xshell配合xmanager能显示opengl版本，版本也可能不对，我这边linux版本3.1，xshell就不可以一直显示1.1版本。查看openGL版本使用glxinfo |grep OpenGL

@@ -1,0 +1,25 @@
+远程桌面使用matlab报错License Manager Error -103
+打开Matlab安装目录下的licenses目录，找到license_**.lic文件，
+然后在每一行加上 TS_OK，即可，
+INCREMENT Aerospace_Blockset MLM 369 permanent uncounted \
+VENDOR_STRING=vi=0:at=200:ae=1:lu=300:lo=IN:ei=6257193:lr=1: \
+HOSTID=ANY SN=968398 SIGN=0D8A1582514C TS_OK
+INCREMENT Aerospace_Toolbox MLM 369 permanent uncounted \
+VENDOR_STRING=vi=0:at=200:ae=1:lu=300:lo=IN:ei=6257193:lr=1: \
+HOSTID=ANY SN=968398 SIGN=13FDDFF8C36C TS_OK
+........
+然后问题解决，可以远程桌面启动matlab
+
+
+如果说在现场需要邮件发报错日志，需要按照以下流程操作：su
+mkdir /dev/shm/sysinfo
+sosreport 一路回车，最后会提示生成一个名为sosreport-xxxx.tar.xz的文件
+mv  xxxx/sosreportxxxx.tar.xz  /dev/shm/sysinfo
+cd /root/script
+sh GetSysInfo.sh
+mv SysInfo-*.gz /dev/shm/sysinfo
+cd /dev/shm/sysinfo
+dmesg >> dmesg
+cd ../
+tar -cjvf sysinfo.tar.bz2 sysinfo
+然后把sysinfo.tar.bz2邮件发过来

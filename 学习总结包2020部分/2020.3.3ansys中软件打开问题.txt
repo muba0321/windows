@@ -1,0 +1,9 @@
+软件打不开显示编译器问题
+安装Cshell和几个依赖库
+apt-get install csh
+apt-get install xfs xfstt(xfs安装失败)
+apt-get install t1-xfree86-nonfree ttf-xfree86-nonfree ttf-xfree86-nonfree-syriac xfonts-75dpi xfonts-100dpi
+xset +fp /usr/share/fonts/X11/75dpi/
+xset +fp /usr/share/fonts/X11/100dpi/
+安装以后可以正常使用，环境变量导入profile需要刷新，再导入bashrc则可以直接输命令
+icemcfd（在ansys_inc/v192/icemcfd/linux_and/bin中）和ensight102（在ansys_inc/v192/ICE/bin中）可以直接打开

@@ -1,0 +1,45 @@
+raid搭建
+1.硬raid搭建：
+（1）首先开机按 delete键进入bios设置，找到Storage Configuration选项，然后按enter进入Storage Configuration，在configure这一项选择raid，保存修改后的bios，重启计算机。系统重新启动后，要特别注意开机画面，这时系统会提醒你按Ctrl+I进入RAID设定界面
+（2）进入RAID设定界面后，我们可以看到界面分为上下两个部分。上面部分为操作界面，共有4个选项：1选项是创建RAID磁盘阵列，2选项是删除RAID磁 盘阵列，3选项为恢复硬盘为非RAID状态，4选项是备份卷选项。下面部分是系统的硬盘信息以及组建RAID磁盘阵列信息。
+（3）这里我们选择1选项。这里在name区域，我们可以指定一个raid名称， 然后按[tab]或[enter]键进入下个区域。在raid level区域中，我们可以选择raid级别。接下来我们为raid阵列选择串列可选值，可选值范围从4kb到128kb，不同模式对应不同范 围：raid0–128kb、raid10–64kb、raid5–64kb。最后，在capacity区域中选择卷的容量，此项的默认值是该被选中的磁 盘的最大容量。全部选定后按Y保存即可。
+
+软raid搭建：
+创建 RAID 0 允许的最小磁盘数目是2个，但你可以添加更多的磁盘，不过数目应该是2，4，6，8等的偶数。如果你有一个物理 RAID 卡并且有足够的端口，你可以添加更多磁盘。
+（1）1、 在 Linux 上设置 RAID 0 前，我们先更新一下系统，然后安装mdadm 包。mdadm 是一个小程序，这将使我们能够在Linux下配置和管理 RAID 设备。
+1.	# yum clean all && yum update
+2.	# yum install mdadm -y
+（2）查看硬盘是否被检测到
+    ls -l  /dev|grep sd
+ (3)检测到硬盘之后，同时检查是否链接的驱动器已经被现有的raid使用：
+   # mdadm --examine /dev/sd[b-c]
+  当检测到两个磁盘驱动器都没有raid后，接下来进行raid的组建。
+（4）创建raid的分区 # fdisk /dev/sdb
+1. 创建分区。
+按n 创建新的分区。然后按P 选择主分区。
+接下来选择分区号为1。只需按两次回车键选择默认值即可。
+然后，按P 来显示创建好的分区
+2.请按照以下说明将分区创建为 Linux 的 RAID 类型。
+按L，列出所有可用的类型。
+按t 去修改分区。
+键入fd 设置为 Linux 的 RAID 类型，然后按回车确认。
+然后再次使用p查看我们所做的更改。
+使用w保存更改。
+按相同的方法对另一块硬盘也进行如上的操作。
+3.创建分区后，验证这两个驱动器是否正确定义 RAID，使用下面的命令。
+1.	# mdadm --examine /dev/sd[b-c]
+2.	# mdadm --examine /dev/sd[b-c]1
+4.现在使用以下命令创建 md 设备（即 /dev/md0），并选择 RAID 合适的级别。
+1.	# mdadm -C /dev/md0 -l raid0 -n 2 /dev/sd[b-c]1
+2.	# mdadm --create /dev/md0 --level=stripe --raid-devices=2 /dev/sd[b-c]1
+•	-C – 创建
+•	-l – 级别
+•	-n – RAID 设备数
+7、 一旦 md 设备已经建立，使用如下命令可以查看 RAID 级别，设备和阵列的使用状态。
+1.	# cat /proc/mdstat
+9.查看 RAID 设备
+1.	# mdadm --detail /dev/md0
+10.给 RAID 设备创建文件系统
+将 RAID 设备 /dev/md0 创建为 ext4 文件系统，并挂载到/mnt/raid0 下。
+# mkfs.ext4 /dev/md0
+11.在 RAID 设备上创建好 ext4 文件系统后，现在创建一个挂载点（即 /mnt/raid0），并将设备 /dev/md0 挂载在它下。

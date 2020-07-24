@@ -1,0 +1,16 @@
+提示  libXXXXX(库名)  no such file or not found两种情况
+1.系统有这个库没找到
+locate libXXXXX(库名)(locate 找不到的话就用find /home/gentai/openfoam/..... (你想在哪个路径查找)   -name  libXXXXX(库名) )
+有这个库的话会显示其存在很多路径，找到一种一条如
+/opt/software/ansys/v102/lib/libXXXXX(库名)
+那么可以添加临时环境变量
+export LD_LIBRARY_PATH=/opt/software/ansys/v102/lib:$LD_LIBRARY_PATH
+或者把这个写进/etc/profile或者当前使用用户的bashrc如/home/customer/.bashrc或者~/.bashrc
+写完以后source /etc/profile或者source ~/.bashrc
+
+2.系统没有这个库，centos用yum，ubuntu用apt-get
+apt-get  libXXXXX(库名)(库名)
+如果报错，比如说和环境冲突或者版本问题可以先
+apt-get libX*(库名)下载相关库，然后再重新下载原库
+apt-get libXXXXX(库名)
+如果提示联网下载找不到这个库就去百度看安装这个库

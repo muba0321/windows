@@ -1,0 +1,9 @@
+个人主机IP变量获取
+host_ip=$(ifconfig | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | head -n1)
+echo $host_ip
+
+时间变量获取
+A=`date +%Y-%m-%d-%H:%M`
+
+
+

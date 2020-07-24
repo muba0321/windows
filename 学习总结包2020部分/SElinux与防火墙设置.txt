@@ -1,0 +1,79 @@
+先说下SELinux下的几个基本的概念
+    主体    # SELinux管理的主体为进程
+    目标    # SELinux通过管理进程，来限制进程访问的目标，指文件
+    工作模式    # 决定SELinux机制的启动与否
+        enforcing ===>强制模式，SELinux已经启动    
+        permissive===>宽容模式，SELinux已经启动，但不会禁止，只是会提出警告信息
+        disabled  ===>关闭模式，关闭SELinux
+    工作类型（SELinux type）   # 表示SELinux具体的安全性策略
+        strict  ===>每个进程都受限制（仅在centos5）
+        targeted===>默认类型为targeted,主要限制网络服务
+        minimum ===>简化版的targetd，限制部分网络服务（centos7）
+        mls     ===>多级安全限制，较为严格
+    安全上下文（security context）
+        这个是我们主要修改的地方，进程必须和文件的安全上下文对应（不是必须一样）才能对其进行访问。
+        ls -Z 文件名    # 查看文件的安全上下文
+        ps -eZ           # 查看进程的安全上下文
+      sestatus    # 查看SELinux的具体的工作状态
+
+2.1 工作模式
+
+getenforce可以查看当前SELinux的工作模式；setenforce可以修改SELinux的工作模式，不过仅能在permissive和enforcing之间切换。
+        [root@CentOS6 ~]# setenforce 0|1  分别代表permissive、enforcing   
+使用命令修改工作模式只在当前有效，想要开机生效，而且如果想要在disabled和其他两种模式之间切换，只有修改配置文件参数然后重启，该配置文件是/etc/selinux/config，另外也可以通过/etc/sysconfig/selinux文件修改，其实该文件是/etc/selinux/config的软链接文件
+ notice：SELinux从disabled切换到其他模式的时候，系统的重启会花费很长的时间，因为需要为每个受管制的进程和文件写入安全上下文，我的小伙伴以为是配置过程中出错然后直接恢复快照了。
+2.2 工作类型
+SELinux下存在不同的规则，SELinux根据不同的工作类型对这些规则打开或关闭（on|off<布尔值1|0>），然后通过规则的开启与关闭具体地限制不同进程对文件的读取。
+    getsebool -a 或者 sestatus -b      # 查看当前工作类型下各个规则的开启与否
+etsebool -P 规则名称 [0|1]    # 修改当前工作类型下指定规则的开启关闭，-P表示同时修改文件使永久生效
+
+3.1 security context介绍
+安全上下文存在于进程与文件中，context随进程一起存入内存中，文件的context存放在其对应的inode中，因此进程在访问文件时，要先读取inode，再判断是否能够访问该文件。
+    ls -Z    # 显示文件的安全上下文
+    ps -eZ   # 显示所有进程的安全上下文
+context查询工具seinfo、sesearch
+    seinfo -u    # 查询所有的user字段的种类
+    seinfo -r    # 查询所有的role字段的种类
+    seinfo -t    # 查询所有的type字段的种类  
+sesearch -A 可以查询什么类型进程可以读取什么type类型的文件
+    sesearch -A -s 进程type    # 查询type类型的进程能够读取的文件type    
+    sesearch -A -b 规则（规则的boolean值，所以为-b选项，理解为bool规则）
+                               # 查询指定规则下放行的进程能够读取的文件type
+3.2 当前context和期望context   
+系统中的每个文件都会有context，我们使用ls -Z查询出来的我们看到的context就是当前context；那期望context又是什么呢，系统会把每个文件的默认context记录下来并保存，这样系统记录下来的就是期望context。semanage命令可以管理每个文件的期望context，也叫期望标签。
+    semanage fcontext -l                     # 查看所有的期望SELinux标签
+    semanage fcontext -a -t type 目标目录    # 添加期望SELinux标签
+     semanage fcontext -m -t type 目标目录    # 修改期望SELinux标签
+     semanage fcontext -d -t type 目标目录    # 删除期望SELinux标签
+3.3 修改当前context    
+使用chcon命令手动修改security context，格式chcon 选项 目标文件
+        chcon        # 手动修改文件的context，-R选项可以递归修改目录，-v选项可以显示context的修改前后的结果
+        chcon -t     # 修改文件的context的type字段
+        chcon -u     # 修改文件的context的user字段
+        chcon -r     # 修改role字段
+       chcon -l     # 修改安全级别
+       chcon -h     # 针对软链接文件的修改，不加-h则会修改软链接对应的原文件
+        chcon --reference=file # 以file的context为模板修改
+使用restorecon命令修改context为期望context，格式restorecon 选项 目标文件，    
+        restorecon -R    # 递归修改目录
+        restorecon -v    # 显示修改的过程
+3.3 semanage修改进程访问的端口号
+虽然听起来是修改端口号的，但是到底还是修改安全上下文的，我们用semanage工具，命令为semanage port
+查询某个服务的context type字段
+        语法：semanage port -l |grep 服务名
+添加某个端口为指定服务的访问端口        
+        语法：semanage port -a -t type -p 协议 端口号（不要与常用端口重复）
+例如添加ssh服务的端口号，默认为22
+四、SELinux日志管理
+SELinux阻止的进程的日志记录存放在/var/log/audit/audit.log文件中，但是该文件中的内容用户阅读体验很差，可以去cat /var/log/audit/audit.log看看，因此系统为我们提供了sealert工具，帮助我们整理该日志文件，sealert工具处理日志文件的时候需要花费一点时间，请耐心等待。
+    另外SELinux的日志功能需要auditd.service服务的开启。
+结合案例（apache SELinux配置）来了解sealert工具：
+保本机配置了httpd服务并处于开启状态，httpd服务配置方法请参考博客：Apache部署httpd服务
+2./usr/sbin/httpd命令会开启进程去读取/var/www/html/目录下以.html结尾的文件，现在在家目录下创建文件~/index.html，随意编写内容，之后把新创建的文件移动至/var/www/html/下。
+3.我们通过浏览器，在地址栏输入本机IP，查看成功与否，当出现如下界面的时候表示访问失败。
+4.我们在配置服务的时候确定了没有问题，这时候我们要想到可能是SELinux阻止了我们访问。我们通过命令
+    sealert -a /var/log/audit/audit.log
+查看SELinux日志，我们找到httpd的关键字，阅读内容，下图中的内容是我们主要关注的部分，其他则是/var/log/audit/audit.log的内容，我们可以忽略。最后我们优先考虑改动最小的解决方案，即修改SELinux标签。
+5.执行命令restorecon -v /var/www/html/index.html，就是修改该文件为httpd能够访问的默认标签
+6.再用浏览器访问查看结果，这次成功。
+https://blog.51cto.com/13570193/2093299

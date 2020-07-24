@@ -1,0 +1,9 @@
+linux安装python3和jdk编译器
+python3:https://www.cnblogs.com/lemon-feng/p/11208435.html
+jdk:https://blog.csdn.net/weixin_44538107/article/details/88683530
+出现报错，是版本问题要对应系统版本进行下载才可以正常使用我下
+Linux ARM 64 Hard Float ABI	74.89 MB  	jdk-8u171-linux-arm64-vfp-hflt.tar.gz
+这个版本时，就出现了如题的错误。改用：
+Linux x64	182.05 MB  	jdk-8u171-linux-x64.tar.gz就可以了
+apache安装教程：https://blog.csdn.net/qq_40618664/article/details/94875995
+eclipse安装教程：https://www.linuxidc.com/Linux/2017-12/149907.htm关于hadoop的测试使用

@@ -1,0 +1,3 @@
+1.vncserver安装，linux下按照这个方法可以安装成功https://blog.csdn.net/qq_37534835/article/details/81236041，安装完以后启动服务，windows安装vncviewer，直接就能用，连接方式输入ip:5901即可，如果显示连接被拒绝，可以cd /root/.vnc里面执行vncserver刷新一下就行
+
+2.关于出现SSH连接问题的，可以先看能否互相ping通然后再检查SSH服务状态，也可以cmd内输入ssh -p端口号（默认22） root(用户名)@192.168.0.111（IP地址），还不行的话当连接报错是Server responded "Algorithm negotiation failed时候可以参考网上添加两行代码和修改一些小地方https://blog.csdn.net/u011425939/article/details/53447769,看能否解决https://www.cnblogs.com/diantong/p/9877132.html也可以考虑修改端口，如果是SSH显示unreachble，

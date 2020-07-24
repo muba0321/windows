@@ -1,0 +1,1 @@
+linux下载git工具，安装绑定github账号以后，可以再github创建仓库，git备份库和上传使用git add以及后面加commit参数实现上传详细可参考https://www.cnblogs.com/du-hong/p/9921214.html，上传以后后面对之前备份文件除了新建文件和文件夹以外的行为修改都可以通过git statu查看修改或者删除文件的位置，并且可以通过git log查看版本号，通过git reset --hard 版本号进行恢复文件，不再需要担心自己漏删或者修改文件出问题的情况了。当创建新文件夹无法添加时需要在里面随便创建一个文件，git .添加以后commit push上传即可。

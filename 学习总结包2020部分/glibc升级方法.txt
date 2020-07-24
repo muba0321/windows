@@ -1,0 +1,18 @@
+glibc安装
+*****一定注意安装新版本前不要卸载旧版本，安装新版本后重新制作软连接即可
+首先, 点击此处下载glibc点击下载, 得到glibc-2.14.tar.gz使用如下命令解压glibc-2.14.tar.gz:
+$ tar -xzvf glibc-2.14.tar.gz
+当前目录下得到目录glibc-2.14, 执行$cd glibc-2.14命令进入目录, 依次执行如下命令编译安装glibc-2.14:
+$ mkdir build	// 在glibc-2.14目录下建立build文件夹
+$ cd build		// 进入build目录
+$ ../configure --prefix=/opt/glibc-2.14 // 配置glibc并设置当前glibc-2.14安装目录
+$ make && make install		// 编译安装glibc-2.14库
+glibc软链
+安装完成后, 建立软链指向glibc-2.14, 执行如下命令:
+$ rm -rf /lib64/libc.so.6 			// 先删除先前的libc.so.6软链
+$ ln -s /opt/glibc-2.14/lib/libc-2.14.so /lib64/libc.so.6
+注意
+删除libc.so.6之后可能导致系统命令不可用的情况, 可使用如下方法解决:
+$ LD_PRELOAD=/opt/glibc-2.14/lib/libc-2.14.so  ln -s /opt/glibc-2.14/lib/libc-2.14.so /lib64/libc.so.6
+如果上述更新失败可使用如下命令还原:
+$ LD_PRELOAD=/lib64/libc-2.12.so ln -s /lib64/libc-2.12.so /lib64/libc.so.6    // libc-2.12.so 此项是系统升级前的版本

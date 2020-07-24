@@ -1,0 +1,27 @@
+﻿1.cp MS8.0 /home/customer  #拷贝到目录下，因为安装时不能用root权限安装会出问题，MS8.0文件夹不一定是这个名字根据情况看，主要是里面要有MaterialsStudio80和_SolidSQUAD_这两个文件夹
+2.chmod 777 MaterialsStudio80
+  chmod 777 install 
+  cd LicensePack
+  chmod 777 lp_setup*    #不打权限安装会失败
+3.cd /home/customer/MS8.0/MaterialsStudio80/
+  ./install  #进入目录安装MS 在安装步骤中，大多数都是选择默认选项，注意MS和LP的安装目录，等会要找到的。
+安装到最后要你输入数字时候输入99完成
+
+4.cp /home/customer/MS8.0/_SolidSQUAD_/msi.lic /opt/accelrys/LicensePack/Licenses  #把证书复制过去
+5.vim /opt/accelrys/LicensePack/Licenses/msi.lic 然后吧里面的hostID改成自己的(node01)
+
+6.cd /opt/accelrys/LicensePack/linux/bin
+  
+  ./lp_admin  #出现安装界面（有一个error，但是界面正常弹出，error可忽略）
+
+7.选择Install License 然后找到证书后Install
+
+8.cd /opt/accelrys/MaterialsStudio8.0/etc/Gateway
+  ./msgateway_control_18888 start #这些路径都是上面安装过程中设置的
+
+9.打开浏览器输入http://IP：18888(比如http://192.168.1.10:18888)完成
+
+
+
+注意：安装过程提示你需要安装依赖如lib...so.1这种东西，然后yum install 更新不了，或者更新以后还提示缺少依赖，用yum install lib...so.*然后再yum install lib...so.1基本就可以完成，
+后面很多依赖库更新不了都可以用这种方法，把最后数字换成*安装然后再重新安装之前的依赖

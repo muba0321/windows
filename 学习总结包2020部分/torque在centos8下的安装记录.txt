@@ -1,0 +1,2 @@
+1.centos8纯净版安装torque，配置configure成功以后不管是只添加路径还是添加--enable-cgroups --with-hwloc-path=/usr/local在最后make都会报同样错误，Makefile:497\uff1aattr_fn_acl.o] \u9519\u8bef 1，去网上查相关错误搜到的也是别人一样的经历，centos7可以安装的包在8就会报同样的错误，网上的解释是centos8不支持安装torque,暂时没有找到相关解决方法
+2.配置环境报错configure: error: Must have atexit() or on_exit()安装hwlyoc-devel解决yum install -y hwloc-devel，换源也找不到可以去https://centos.pkgs.org/8/centos-powertools-x86_64/hwloc-devel-1.11.9-3.el8.x86_64.rpm.html这里下载64位RPM包然后yum locateinstall rpm包即可。 

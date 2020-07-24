@@ -1,0 +1,1 @@
+linux软件管理工具git的安装与配置，需要有一个github的账号在账号的个人设置中进行SSH密钥验证，验证完linux中输入ssh git@github.com验证是否成功git安装配置教程如下https://blog.csdn.net/HcJsJqJSSM/article/details/82941340

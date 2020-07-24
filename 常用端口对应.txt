@@ -1,0 +1,12 @@
+MS：18888
+tomcat : 18888
+IIS（HTTP）：80 
+SQLServer：1433 
+Oracle：1521 
+MySQL：3306 
+FTP：21 
+SSH：22 
+Tomcat：8080
+Telnet ：23 
+HTTP协议代理服务器常用端口号：80/8080/3128/8081/9080
+SOCKS代理协议服务器常用端口号：1080

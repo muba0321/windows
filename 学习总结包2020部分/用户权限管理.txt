@@ -1,0 +1,360 @@
+1.2 linux操作系统用户组
+在Linux中，用户组分类方式有三种： 
+1、管理员组、普通用户组（系统用户组，登录用户组） 
+2、用户的基本组、用户附加组 
+3、私有组、公共组
+用户组标识：group id，GID 
+通常使用16bits二进制数字表示（0-65535） 
+管理员的用户组标识：0 
+普通用户组：1-65535 
+系统用户组：1-499（Centos6）、1-999（Centos7） 
+登录用户组：500-60000（Centos6）、1000-60000（Centos7）
+linux通过名称解析库“/etc/group”文件解析用户名与用户ID之间的对应关系。
+/etc/group：组的信息库 
+group_name:passwd:GID:user_list 
+user_list：该组用户的成员；以此组为附加组的用户的用户列表
+
+1.3 linux操作系统密码
+用户在登录linux系统时，会对比password与之前保存在“/etc/shadow”、“/etc/gshadow”文件中的密码是否一致。
+
+​加密算法： 
+对称加密：加密和解密使用同一个密码 
+非对称加密：加密和解密使用的一对密钥 
+密钥对：公钥（public key）、私钥（private key） 
+单向加密：只能加密，不能解密；提取数据特征码； 
+定长输出： 
+雪崩效应：密码中某一个字符改变，那么整个加密后的密钥都会改变
+
+linux的密码加密方式使用单向加密算法，并且添加随机数（salt）计算得出的。
+
+系统识别算法ID	算法名称
+1	md5：message digest，128bits
+2	sha：secure hash algorithm，160bits
+3	sha224
+4	sha256
+5	sha384
+6	sha512
+/etc/shadow：用户密码
+
+用户名：加密的密码：最近一次修改密码的时间：最短使用期限：最长使用期限：警告期段：非活动期限：过期期限：保留字段 
+这里写图片描述
+
+[root@localhost ~]# head -1 /etc/shadow
+root:$6$mNeLUb3TE/L9utIA$nVgYyR6KkPDFRYrZC2Q9hPRNgz8z3mDKsQKraE1Fy8.LBMQoldhK4Ne1ZZlolZg2362JgdrwmTRmSbI5PTe.j0::0:99999:7:::
+1
+2
+加密密码：使用$分隔，第一个段表示使用的加密算法，第二个段表示添加的salt。第三段表示加密后的密码.
+
+2、权限管理
+linux的文件管理权限分为读、写和执行
+
+[root@localhost ~]# ls -l /bin/bash
+-rwxr-xr-x. 1 root root 960392 8月   3 2016 /bin/bash 
+1
+2
+文件权限： 
+-rwxr-xr-x. 
+共分为五个部分： 
+-：表示文件类型 
+rwx：用户属主的权限 
+r-x：用户属组的权限 
+r-x：其他用户的权限 
+.：是否启用facl
+
+权限： 
+r：readable，读 
+w：wirteable，写 
+x：excuteable，执行
+
+权限对文件的作用： 
+r：可获取文件的数据； 
+W：可修改文件的数据； 
+x：可将此文件运行为进程；
+
+权限对目录的作用： 
+r：可使用ls命令获取其下的所有文件列表； 
+w：可修改此目录下的文件列表；即创建或删除文件，包括子目录。 
+x：可cd至此目录中；且可使用ls -l来获取所有文件的详细属性信息；
+
+权限组合	二进制数	十进制数
+—	000	0
+–x	001	1
+-w-	010	2
+-wx	011	3
+r–	100	4
+r-x	101	5
+rw-	110	6
+rwx	111	7
+练习：
+rw-rw-r--   664
+rwxrwxr-x   775
+rwxr-x---   750
+rw-------   600 
+rwxr-xr-x   755
+1
+2
+3
+4
+5
+6
+3、相关命令
+3.1用户管理命令
+useradd命令：创建用户 
+useradd [选项] 登录名 
+-u，–uid UID：指定UID，默认是上一个用户的UID+1 
+-g，–gid GID：指定基本组ID，此组得事先存在； 
+-G，–groups GROUP1[,GROUP2,……[,GROUPSN]]：指明用户所属的附加组，多个组之间用逗号分隔。 
+-c，–comment COMMENT：指明注释信息 
+-d，–home HOME_DIR：以指定路径为用户的家目录；通过复制/etc/skel此目录并重命名实现；指定的家目录路径如果事先存在，则不会为用户复制环境配置文件。 
+-s，–shell SHELL：指定用户的默认shell，可用的所有shell列表存储在/etc/shells文件中； 
+-r，–system：创建系统用户 
+-M：不为用户创建主目录 
+-f，–incative INACTIVE：在密码过期后，账户被彻底禁用之前的天数，0表示立即禁用，-1表示禁用该功能。 
+注意：创建用户时的诸多默认设定配置文件为/etc/login.defs
+
+useradd -D：显示创建用户的默认选项配置； 
+useradd -D 选项：修改默认选项的值； 
+修改的结果保存于/etc/default/useradd文件中；可以直接修改此文件来实现。
+
+usermod命令：修改用户属性 
+usermod [选项] 登录名 
+-u，–uid UID：修改用户的ID为此处指定的新UID； 
+-g，–group GROUP：修改用户所属的基本组；此组得事先存在； 
+-G, –groupsGROUP1[,GROUP2,…[,GROUPN]]]：修改用户所属的附加组，原来的附加组会被覆盖； 
+-a, –append：与-G一同使用，用于用户追加新的附加组； 
+-c，–comment COMMENT：修改注释信息； 
+-d，–home HOME_DIR：修改用户的家目录；用户原有的文件不会被转移至新位置； 
+-m，–move-home：只能与-d选项一同使用，用于将原来的家目录移动为新的家目录； 
+-l，–login NEW_LOGING：修改用户名； 
+-s, –shell SHELL：修改用户的默认shell； 
+-L，–lock：锁定用户密码；即在用户原来的密码字符串之前添加一个”！”； 
+-U，–unlock：解锁用户密码，
+
+userdel命令：删除用户， 
+userdel [选项] 登录名 
+-r：删除用户时一并删除其家目录和用户邮箱；
+
+id命令：显示用户的真实和有效的UID和GID 
+id [OPTION]… [USERNAME] 
+-u：仅显示有效的UID； 
+-g：仅显示用户的基本组的ID； 
+-G：仅显示用户所属的所有组的ID； 
+-n：显示名字而非ID；一般与g一起使用：-ng
+
+**su命令：**switch user 
+登录式切换：会通过重新读取目标用户的配置文件来重新初始化 
+su - USERNAME 
+su -l USERNAME
+
+非登录式切换：不会读取目标用户的配置文件进行初始化 
+su USERNAME
+
+注意：管理员可无密码切换至其它任何用户；其它用户在切换用户时必须输入密码。
+
+-c “COMMAND”：仅以指定用户的身份运行此处指定的命令 
+例如：su - USERNAME -c “whoami”
+
+3.2 用户组管理命令
+groupadd命令：添加组 
+groupadd [选项] group_name 
+-g GID：指定GID，默认是上一个组的GID+1 
+-r：创建系统组；
+
+groupmod命令：修改组属性 
+groupmod [选项] GROUP 
+-g GID：修改GID 
+-n new_name：修改组名
+
+groupadd命令：删除组 
+groupdel [选项] GROUP
+
+3.3 用户及用户组练习
+练习1：创建用户gentoo，UID为4001，基本组为gentoo，附加组为distro（GID为5000）和penguin（GID为5001）；
+
+groupadd -g 5000 distro
+groupadd -g 5001 penguin
+useradd -u 4001 -G distro,penguin
+
+练习2：创建用户fedora，其注释信息为"Fedora Core"，默认shell为/bin/tsch；
+
+useradd -c "Fedora Core" -s /bin/tsch fedora
+
+练习3：修改gentoo用户的家目录为/var/tmp/gentoo；要求其原有文件人仍能被用户访问；
+
+usermod -d /var/tmp/gentoo -m gentoo
+
+练习4：为gentoo新增附加组netadmin
+
+group netadmin
+usermod -a -G netadmin
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+3.4 密码管理命令
+passwd命令： 
+passwd [-k] [-l] [-u [-f]] [-d] [-e] [-n mindays] [-x maxdays] [-w warndays] [-i inactivedays] 
+[-S] [–stdin] [username] 
+（1）passwd：修改用户自己的密码； 
+（2）passwd USERNAME：修改指定用户的密码，但仅root有此权限； 
+-l，-u：锁定和解锁用户； 
+-d：清除用户密码； 
+-e DATE：过期期限，日期； 
+-i DAYS：非活动期限，时间范围； 
+-n DAYS：密码的最短使用期限； 
+-x DAYS：密码的最长使用期限； 
+-w DAYS：警告期限； 
+–stdin：
+
+echo “PASSWORD” | passed –stdin USERNAME
+
+[root@localhost ~]# echo "hadoop" | passwd --stdin hadoop
+更改用户 hadoop 的密码 。
+passwd：所有的身份验证令牌已经成功更新。                
+1
+2
+3
+gpasswd命令： 
+用户组密码文件：/etc/gshadow
+
+gpasswd [选项] group 
+-a USERNAME：向组中添加用户，作为附加组 
+-d USERNAME：从组中删除用户
+
+newgrp命令：临时切换指定的组为基本组； 
+newgrp [-] [group] 
+-：会模拟用户重新登录以实现重新初始化其工作环境 
+注意： 
+若指定组设定了密码： 
+（1）如果用户的附加组是要切换到的组名，那么不需要密码可以直接切换到指定组。 
+（2）如果用户的附加组不包含要切换的组名，那么需要输入密码才能切换到指定组。 
+若指定组没有设定密码：所有用户都不可以直接切换到指定组；root用户除外。
+
+chage命令：更改用户密码过期信息 
+[root@localhost ~]# chage list root 
+用法：chage [选项] 登录 
+选项： 
+-d, –lastday 最近日期 将最近一次密码设置时间设为“最近日期” 
+-E, –expiredate 过期日期 将帐户过期时间设为“过期日期” 
+-h, –help 显示此帮助信息并推出 
+-I, –inactive INACITVE 过期 INACTIVE 天数后，设定密码为失效状态 
+-l, –list 显示帐户年龄信息 
+-m, –mindays 最小天数 将两次改变密码之间相距的最小天数设为“最小天数” 
+-M, –maxdays 最大天数 将两次改变密码之间相距的最大天数设为“最大天数” 
+-R, –root CHROOT_DIR chroot 到的目录 
+-W, –warndays 警告天数 将过期警告天数设为“警告天数”
+
+其他几个命令用户管理命令： 
+chsh：修改shell 
+chfn：修改用户基本信息 
+finger：显示用户基本信息
+
+[root@localhost ~]# finger
+Login     Name       Tty      Idle  Login Time   Office     Office Phone   Host
+root      root       pts/0   20:33  May 17 14:47                           (192.168.126.1)
+root      root       pts/1          May 18 12:56                           (192.168.126.1)
+1
+2
+3
+4
+pwck：检查用户的密码是否有问题
+
+[root@localhost ~]# pwck
+用户“ftp”：目录 /var/ftp 不存在
+用户“pulse”：目录 /var/run/pulse 不存在
+pwck：无改变   
+1
+2
+3
+4
+grpck：检查组文件的完整性
+
+3.5 权限管理命令
+chmod命令： 
+chmod [OPTIONS]… MODE[,MODE]… FILE… 
+chmod [OPTIONS]… OCTAL-MODE FILE… 
+chmod [OPTIONS]… –reference=RFILE FILE…
+
+三类用户：
+u：属主
+g：属组
+o：其它
+a：所有
+1
+2
+3
+4
+5
+（1）chmod [OPTIONS]… MODE[,MODE]… FILE… 
+MODE表示法： 
+赋权表示法：直接操作一类用户的所有权限位； 
+在赋予三类用户的权限不同时，则用逗号隔开；如果相同，可以合并授权。 
+u= 
+g= 
+o= 
+a= 
+授权表示法：直接操作一类用户的所有权限位r,w,x： 
+在赋予三类用户的权限不同时，则用逗号隔开；如果相同，可以合并授权。 
+u+，u- 
+g+，g- 
+o+，o- 
+a+，a- 
+（2）chmod [OPTIONS]… OCTAL-MODE FILE… 
+使用十进制的数字进行授权
+
+（3）chmod [OPTIONS]… –reference=RFILE FILE… 
+参考文件权限授权；
+
+选项： 
+-R，–recursive：递归修改，对目录下的所有文件（包括子目录）都有效。 
+注意：用户仅能修改属主为自己的那些文件的权限；
+
+从属管理管理命令：chown，chgrp 
+chown命令： 
+chown [选项]… [OWNER][:[GROUP]] FILE… 
+chown [选项]… [OWNER][.[GROUP]] FILE… 
+chown [选项]… –reference=RFILE FILE… 
+选项： 
+-R：递归修改，对目录下的所有文件（包括子目录）都有效。
+
+chgrp命令： 
+chmod [选项]… GREOUP FILE… 
+chmod [选项]… –reference=RFILE FILE…
+
+注意：仅管理员可修改文件的属主和属组；
+
+思考1：用户对目录有写权限，但对目录下的文件没有写权限时，能否修改此文件内容？能否删除此文件？
+不能修改文件的内容，但是能够删除此文件
+思考2：用户对目录有什么权限时，可以使用mv命令。
+执行权限
+1
+2
+3
+4
+umask：文件的权限反向掩码，遮罩码； 
+文件： 
+666-umask 
+目录： 
+777-umask 
+注意：之所以文件用666去减，表示文件默认不能拥有执行权限；如果减得的结果中有执行权限，则需要将其加1；
+
+umask命令： 
+umask：查看当前umask 
+umask MASK：设置umask；
+
+注意：此类设定仅对当前shell进程有效。

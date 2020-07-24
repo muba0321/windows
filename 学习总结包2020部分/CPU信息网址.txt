@@ -1,0 +1,3 @@
+桌面CPU天梯图及CPU世代表：http://www.mydrivers.com/zhuanti/tianti/cpu/
+AMD桌面处理器规格表：http://www.mydrivers.com/zhuanti/tianti/cpu/index_amd.html#ryzen3
+Intel桌面处理器规格表：http://www.mydrivers.com/zhuanti/tianti/cpu/index_intel.html#sk-x

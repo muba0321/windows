@@ -1,0 +1,8 @@
+1.进入文件夹，双击R2018a_win64_dvd1.iso将其挂载，不要用解压软件解压，用系统DVD驱动器挂载不然安装会出问题
+2.挂载后进入DVD驱动器查看该镜像文件，直接setup安装。
+3.选择使用文件密钥进行安装，下一步选是，下一步选择已有密钥，复制粘贴09806-07443-53955-64350-21751-41297
+4.选择好安装路径如：D:\Program Files (x86)\..\bin\win64，下一步产品可以全选然后开始安装
+5.安装到中间提示弹出DVD1再挂载DVD2,就直接进入我的电脑，右键DVD驱动器，选择弹出，再将R2018a_win64_dvd2.iso挂载就可以继续安装最后完成
+6.安装完成后打开软件安装目录如：D:\Program Files (x86)\..\bin\win64点击“activate_matlab.exe”进行激活，选择“在不选择Internet情况下手动激活”。
+7.点击下一步，浏览找到解压后的“crack”文件夹下的“license_standalone.lic”文件。点击下一步，完成激活。
+8.将“crack”文件夹下面MATLAB Production Server里面的win64文件夹里三个破解动态库文件复制替换 到MATLAB安装目录下面的“D:\Program Files (x86)\..\bin\win64”文件覆盖即可完成破解。

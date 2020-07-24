@@ -1,0 +1,21 @@
+1.centos8纯净版安装torque，配置configure成功以后不管是只添加路径还是添加--enable-cgroups --with-hwloc-path=/usr/local在最后make都会报同样错误，Makefile:497\uff1aattr_fn_acl.o] \u9519\u8bef 1，去网上查相关错误搜到的也是别人一样的经历，centos7可以安装的包在8就会报同样的错误，网上的解释是centos8不支持安装torque,暂时没有找到相关解决方法
+2.配置环境报错configure: error: Must have atexit() or on_exit()安装hwlyoc-devel解决yum install -y hwloc-devel，换源也找不到可以去https://centos.pkgs.org/8/centos-powertools-x86_64/hwloc-devel-1.11.9-3.el8.x86_64.rpm.html这里下载64位RPM包然后yum locateinstall rpm包即可。 
+3.opengl版本太低，可以尝试安装显卡驱动，nvidia官方给的opengl也就是一个显卡驱动，下面会给出适配的显卡型号，可以先安装该显卡型号对应的驱动看能否成功，安装完以后再安装mesa等依赖库然后可以进行测试，
+linux查看 opengl版本方法
+https://blog.csdn.net/sinat_36301420/article/details/85237579，按照里面编译执行我出现了报错致命错误：GL/glut.h：没有那个文件或目录，需要yum install glut-devel以后执行gcc test.c -o test -lglut -lGL -lGLU获得执行文件test,然后./test执行获得gl版本信息。
+按照这个链接最终可以获得oengl 3dviewe的图形测试结果https://www.linuxidc.com/Linux/2017-03/141555.htm
+ 注意：不要用文字界面如xshell,ssh查看运行opengl，不支持，且就算xshell配合xmanager能显示opengl版本，版本也可能不对，我这边linux版本3.1，xshell就不可以一直显示1.1版本。查看openGL版本使用glxinfo |grep OpenGL
+4.linux安装python3和jdk编译器
+python3:https://www.cnblogs.com/lemon-feng/p/11208435.html
+jdk:https://blog.csdn.net/weixin_44538107/article/details/88683530
+出现报错，是版本问题要对应系统版本进行下载才可以正常使用我下
+Linux ARM 64 Hard Float ABI	74.89 MB  	jdk-8u171-linux-arm64-vfp-hflt.tar.gz
+这个版本时，就出现了如题的错误。改用：
+Linux x64	182.05 MB  	jdk-8u171-linux-x64.tar.gz就可以了
+5.武汉科技大学 王老师 询问windows杀毒和管理软件，推荐老师使用电脑管家或者火绒，老师耳机插上没声音，让老师换后面接口插上可以使用
+6.linux软件管理工具git的安装与配置，需要有一个github的账号在账号的个人设置中进行SSH密钥验证，验证完linux中输入ssh git@github.com验证是否成功git安装配置教程如下https://blog.csdn.net/HcJsJqJSSM/article/details/82941340
+
+rar安装步骤https://blog.csdn.net/yonggeit/article/details/72190246
+apache安装教程：https://blog.csdn.net/qq_40618664/article/details/94875995
+eclipse安装教程：https://www.linuxidc.com/Linux/2017-12/149907.htm关于hadoop的测试使用
+

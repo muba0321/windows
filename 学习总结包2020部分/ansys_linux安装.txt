@@ -1,0 +1,26 @@
+1. 创建两个文件夹
+mkdir -m 777 /mnt/ansys
+mkdir -m 777 /opt/software/ansys_inc
+2.挂载ansys的ISO文件
+mount -o loop Ansys172.DVD.Linux64.iso /mnt/ansys
+3.进入到ansys进行安装
+	cd /mnt/ansys
+	./INSTALL
+	选择Install ANSYS Products
+	选择I AGREE，选择下一步
+	修改安装路径为/opt/software/ansys_inc，点击下一步
+	设置Hostname，其实这里可以随便填，反正后面还要改。不过以防万一还是填自己的计算机名吧。点击下一步。
+	选择所需的各种模块，如果实在不知道怎么选，干脆就全选好了。点击下一步。
+	选择CAD配置。这里可以选择在软件安装完毕后再配置，激活选项Skip all and configure later using Product & CAD Configuration Manager，点击下一步按钮。
+	确认安装信息，点击下一步按钮。
+	软件开始进行安装，安装过程可能会持续较长的时间。
+	当安装完毕后，继续点击下一步按钮。
+	点击Exit按钮完成安装
+4.和谐处理
+	解压缩和谐文件夹/Ansys.Products.172.Linux64-SSQ/SolidSQUAD/ANSYS.17.2.LOCAL.LICENSING.LINUX64.CRACK-SSQ中的文件ANSYS.17.2.LOCAL.LICENSING.LINUX64.CRACK-SSQ.tar.xz
+	将压缩包中的文件shared_files解压到/opt/ansys_inc中，覆盖原文件，在此之前可能需要更改/opt/ansys_inc/shared_files文件夹的权限，利用终端命令：
+	 chmod -R 777 /opt/ansys_inc/shared_files
+	由于ANSYS安装路径没有按默认路径/usr/ansys_inc，因此这里要修改文件/opt/ansys_inc/shared_files/licensing/ansyslmd.ini中的内容：
+	修改为LICKEYFIL=/opt/software/ansys_inc/shared_files/licensing/license.dat
+5.启动
+/opt/software/ansys_inc/v172/Framework/bin/Linux64/runwb2

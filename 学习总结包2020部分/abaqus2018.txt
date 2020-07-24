@@ -1,0 +1,14 @@
+先把_soildwork_破解文件内部解压好，复制到/opt/software,内部文件解压好，把vendors文件复制到另一个文件夹替换，替换以后修改文件里面的主机名，位置在\DS.SIMULIA.SUITE.2018.LINUX64\_SolidSQUAD_\_SolidSQUAD_\Server\Server\SolidSQUAD_License_Servers\Vendors\DSSimulia\Licenses，修改完回server文件夹，管理员执行uninstall.sh,然后管理员执行install&&update.sh，执行完以后挂载abaqus镜像文件，进去以后，先执行一下命令
+1) yum -y install openmotif ##32 and 64 bit version both
+2) yum -y install ksh
+3) yum -y install compat-libstdc++-33 ##32 and 64 bit version both
+4) yum -y install ncurses-libs ##32 and 64 bit version both
+5) ln -s /lib64/libtinfo.so.5 /lib64/libtermcap.so.2
+6) ln -s /lib/libtinfo.so.5 /lib/libtermcap.so.2
+
+export DSYAuthOS_`lsb_release -si`=1
+export DSY_Force_OS=linux_a64
+export NOLICENSECHECK=true
+执行sh StartGui.sh，然后正常选择就好，开头最后几个软件没必要选择只选择到CAE就可以，第二个不要选，然后进行安装，安装到CAE有三个选项的时候不用管默认你第一个，然后server1t填27800@node01(计算机名)默认到安装结束，记得修改安装位置。
+安装完直接配置环境变量在/etc/profile，或者普通用户的~/.bashrc
+执行命令就是abaqus cae或者abq2018 cae就可以

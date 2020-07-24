@@ -1,0 +1,24 @@
+小记: rpm -ivh xxxx.rpm 安装  rpm -i xxxx.rpm 安装  rpm -ivh xxx.rpm --nodeps 强行安装
+         rpm -q xxx 查看是否安装了(也可以用 rpm -q * )   rpm -e xxxx  卸载  rpm -qa | grep xxx 卸载
+
+向日葵安装
+正常可以直接成功，缺少的库也基本可以yum安装完成，但是有一个库很容易失败就是webkitgtk3缺少，找不到，Yum安装不了，需要去这个网站下载rpm包，http://rpmfind.net/linux/rpm2html/search.php?query=webkitgtk3&submit=Search+...&system=&arch=
+下载好以后直接rpm安装，安装可能又会报错关于缺库问题，可以加参数选项
+rpm -ivh webkitgtk3-2.4.11-2.el7.x86_64.rpm --nodeps
+安装完就可以正常安装向日葵使用了
+安装地址: /usr/local/sunlogin/
+[root@yaco xiangrikui]# cd /usr/local/sunlogin/
+[root@yaco sunlogin]# ls
+bin  etc  res  rpminstall.sh  rpmuninstall.sh  scripts  sunlogin.desktop
+
+TV15安装（在centos8纯净版安装的）
+11版本可以安装成功，但是安装以后打不开
+安装15版本最后三个库找不到
+warning: teamviewer_15.7.6.x86_64.rpm: Header V4 RSA/SHA1 Signature, key ID 0c1289c0: NOKEY
+error: Failed dependencies:
+	libQt5WebKit.so.5()(64bit) >= 5.5 is needed by teamviewer-15.7.6-0.x86_64
+	libQt5WebKitWidgets.so.5()(64bit) >= 5.5 is needed by teamviewer-15.7.6-0.x86_64
+	libQt5X11Extras.so.5()(64bit) >= 5.5 is needed by teamviewer-15.7.6-0.x86_64
+
+
+

@@ -1,0 +1,16 @@
+1.武汉科技大学 王老师  显示器无反应 
+开机风扇转一会然后停下再转判断自检过不去应该是内存，教老师拆下散热器前面风扇，内存从靠近CPU往外标记为1，2，3，4。BIOS没有日志报错
+拔掉内存4，开机可以进系统
+插回内存4开机可以进不去过不了自检，
+拔掉内存4，开不了机，
+拔掉内存3，能进系统，
+内存4插到内存3插槽，能进系统
+内存3插到内存4插槽，能进系统
+进系统内存全部识别正常，重启也正常，下载aida64进行烤机，烤机10+分钟没有出现问题，问题解决。
+
+1.vncserver安装，linux下按照这个方法可以安装成功https://blog.csdn.net/qq_37534835/article/details/81236041，安装完以后启动服务，windows安装vncviewer，直接就能用，连接方式输入ip:5901即可，如果显示连接被拒绝，可以cd /root/.vnc里面执行vncserver刷新一下就行
+2.关于出现SSH连接问题的，可以先看能否互相ping通然后再检查SSH服务状态，也可以cmd内输入ssh -p端口号（默认22） root(用户名)@192.168.0.111（IP地址），还不行的话当连接报错是Server responded "Algorithm negotiation failed时候可以参考网上添加两行代码和修改一些小地方https://blog.csdn.net/u011425939/article/details/53447769,看能否解决https://www.cnblogs.com/diantong/p/9877132.html也可以考虑修改端口，如果是SSH显示unreachble，
+
+1.中南大学铁道学院 张博士送货
+2.linux安装ftp服务和linpack使用安装文档总结
+

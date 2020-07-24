@@ -1,0 +1,74 @@
+ctrl alt f2
+
+df -h
+
+passwd  gentai
+
+startx
+
+cd /
+
+ls
+
+su
+
+49152
+81920
+98000
+ubuntu单用户
+1、加电至如下提示，选中第二行，按回车。
+ Ubuntu
+*Advanced options for Ubuntu
+2、会出现如下两行，选中第二行，按键盘 “e”
+ Ubuntu, with Linux 4.10.0-28-generic
+*Ubuntu, with Linux 4.10.0-28-generic (recovery mode)
+3、出现一堆文本，鼠标移动到倒数第三行，将
+ro recovery nomodeset
+替换为
+rw single init=/bin/bash
+4、按 F10，然后就进入单用户模式了，可以修改文件了。
+
+P1-DIMMA1 a2
+P2-DIMMD1
+
+nvidia-
+
+ubuntu输入密码进不去，循环回登陆界面
+查看报错文件 .xsession-errors   .profile
+您可能会遇到LightDM（默认情况下Ubuntu附带的登录管理器）的问题。在12.04中，它曾经做过与您描述的相同的问题。
+您可以安装GDM（一种替代的登录管理器）来解决此问题：
+在登录屏幕上，按住Ctrl+ Alt+ F2进入终端。不要害怕！只需使用您的用户名和密码登录即可。
+然后，键入sudo apt-get install gdm。让它安装并键入sudo dpkg-reconfigure gdm并按照提示将其设置为您的登录管理器。
+按Ctrl+ Alt+ F7返回到登录屏幕，现在看起来应该有所不同。登录有效吗？如果是这样，您的问题就解决了！
+如果不是，请返回全屏终端（再次，Ctrl+ Alt+ F2），并在sudo dpkg-reconfigure lightdm再次登录管理器时运行以设置LightDM。现在，您知道这肯定是图形驱动程序存在的问题。
+1.
+cd ~
+ls -al
+rm -rf .Xaut*
+2.
+$ cd -
+$ sudo chown gentai:gentai .Xauthority
+ls .Xauthority -l
+3.
+sudo mv ~/.Xauthority ~/.Xauthority.backup
+sudo service lightdm restart
+
+关闭x server 
+service lightdm stop
+/etc/init.d/gdm stop
+init 3 
+
+./nvidia驱动   -no-x-check -no-nouveau-check -no-opengl-files
+init 5
+
+DIMMA1
+DIMMA2
+DIMMB1
+DIMMB2
+
+
+
+cd /home/gentai
+ls -al
+vim .profile
+nvidia-uninstall
